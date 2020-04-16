@@ -16,10 +16,10 @@
 
 | 区域   | Base URL                                |
 | ---- | ---------------------------------------- |
-| 🇳🇿新西兰  | nz.merc.api.lovelive.team |
-| 🇬🇧英国  | uk.merc.api.lovelive.team |
-| 🇦🇺澳大利亚  | au.merc.api.lovelive.team |
-| 🇺🇸美国  | us.merc.api.lovelive.team |
+| 🇳🇿新西兰  | nz-merc.lovelive.team |
+| 🇬🇧英国  | uk-merc.lovelive.team |
+| 🇦🇺澳大利亚  | au-merc.lovelive.team |
+| 🇺🇸美国  | us-merc.lovelive.team |
 
 ### 订单操作
 <table>
