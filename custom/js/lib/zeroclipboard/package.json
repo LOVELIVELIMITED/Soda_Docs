@@ -30,7 +30,7 @@
     "send": "0"
   },
   "devDependencies": {
-    "uglify-js": "1.2.3",
+    "uglify-js": "3.9.1",
     "nodeunit": "0.7.4",
     "jshint": "0.9.1",
     "handlebars": "4.5.3",
