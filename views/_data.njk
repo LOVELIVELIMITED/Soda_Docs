@@ -1,0 +1,136 @@
+{% from 'views/_helper.njk' import alert %}
+
+{% macro limitationsOnCreatingClassIndex() -%}
+当一个数据表的记录数超过 1 万时，开发者将无法自行为其创建索引（此前已创建的索引仍然会对超过 1 万条的数据生效）。商用版用户需要通过 [工单服务](https://leanticket.cn/tickets) 向我们提交创建申请（选择「建立索引」分类），开发版用户需要先升级到商用版才能提交创建申请。
+{% endmacro -%}
+
+{% macro relationDeprecated() -%}
+{{ alert("Relation 类型已被弃用。请使用 [中间表](relation-guide.html#使用中间表实现多对多关系_推荐_) 来完成对关联数据的查询、排序等复杂操作。") }}
+{%- endmacro %}
+
+{% macro preservedWords(delimeter="、") -%}
+  {% set preservedWordList = [
+      "className",
+      "objectId",
+      "ACL",
+      "createdAt",
+      "updatedAt"
+    ] 
+  %}
+  {{ preservedWordList | sort | join(delimeter) }}
+{%- endmacro %}
+
+{% macro regex(useSingleQuotes=false) -%}
+  ^((?!机票).)*&dollar;{% if useSingleQuotes == true %}&apos;{% else %}&quot;{% endif %}
+{%- endmacro %}
+
+{% macro classNameConvention(className="Class 类名称（ClassName）") -%}
+{{className | trim | replace(r/([\x00-\xff])$/gi,"$1 ") }}必须以字母开头，只能包含字母、数字和下划线。
+{%- endmacro %}
+
+{% macro localizedDates() -%}
+注：应用控制台对 `createdAt` 和 `updatedAt` 做了在展示优化，它们会依据用户操作系统时区而显示为本地时间；客户端 SDK 获取到这些时间后也会将其转换为本地时间；而通过 REST API 获取到的则是原始的 UTC 时间，开发者可能需要根据情况做相应的时区转换。
+{%- endmacro %}
+
+{% macro innerQueryLimitation(heading="", description="使用子查询可能会遇到查不到记录或查到的记录不全的情况。例如：", skip="skip") -%}
+{% if heading != "" -%}
+{{ heading }}
+
+{% endif -%}
+{% if description != "" -%}
+{{ description }}
+
+{% endif -%}
+```sql
+-- 找出积分高于 80、region 为 cn 的玩家记录
+SELECT * 
+FROM   player 
+WHERE  NAME IN (SELECT NAME 
+                FROM   gamescore 
+                WHERE  score > 80) 
+       AND region = 'cn' 
+```
+
+LeanCloud 云端使用的并非关系型数据库，无法做到真正的联表查询，所以实际的处理方式是：先执行内嵌/子查询（和普通查询一样，limit 默认为 100，最大  1000），然后将子查询的结果填入主查询的对应位置，再执行主查询。
+
+如果子查询匹配到了 100 条以上的记录（性别等区分度低的字段重复值往往较多），且主查询有其他查询条件（`region = 'cn'`），那么可能会出现没有结果或结果不全的情况，其本质上是子查询查出的 100 条记录没有满足主查询的其他条件。
+
+我们建议采用以下方案进行改进：
+
+- 确保子查询的结果在 100 条以下，如果在 100 - 1000 条的话请在子查询末尾添加 limit 1000。
+- 将需要查询的字段冗余到主查询所在的表上；例如将 score 冗余到 Player 表上，或者将 region 添加到 GameScore 上然后只查 GameScore 表。
+- 进行多次查询，每次在子查询上添加 {{ skip }} 来遍历所有记录（注意 skip 的值较大时可能会引发性能问题，因此不是很推荐）。
+{%- endmacro %}
+
+{% set libVersion = {
+    leancloud:  "4.7.15",
+    unified:    "6.5.0",
+    fastjson:   "1.2.68",
+    okhttp:     "3.8.0",
+    okio:       "1.13.0"
+} %}
+
+{% macro cdn(collapsable = false, file_object_name = "AVFile") %}
+<div id="accordion-cdn">
+  <p>中国节点的文件存储服务自带 CDN 加速访问，但不包括海外 CDN 加速。商用版应用可发工单申请开启海外 CDN 加速（开启后海外访问文件 http/https 流量费用分别上调为 0.40 元/GB、0.60 元/GB。
+国际版没有现成的 CDN 加速访问服务，需要用户自行配置{% if collapsable %}（<a class="accordion-toggle" data-toggle="collapse" parent="#accordion-cdn" escape-hash href="#collapse-cdn">步骤</a>）{% endif %}。</p>
+  <div id="collapse-cdn" class="panel-collapse collapse{% if not collapsable %} in{% endif %}">
+    <p>以 CloudFront 加速服务为例，配置过程如下：</p>
+    <ol>
+    <li>阅读官方指南 <a href="http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/GettingStarted.html">Getting Started with CloudFront</a>。</li>
+    <li>创建一个 AWS 账户，开始使用 CloudFront 服务和付费。</li>
+    <li>S3 的公共访问权限（read permission）已经被配置好，可以跳过指南中有关 S3 配置的部分（<a href="http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/GettingStarted.html#GettingStartedUploadContent">Step 2: Upload your content to Amazon S3 and grant object permissions</a>。</li>
+    <li>CloudFront 配置中的 <strong>Origin Domain Name</strong> 请从 {{ file_object_name }} 的 URL 中获取，其他均可保持默认。</li>
+    </ol>
+  </div>
+</div>
+{% endmacro %}
+
+{# 之前按服务拆分 api 和 engine 是计划未来优化不同服务的请求处理。
+但实际上目前的现状是两者可以互相访问，即通过 api 子域名可以调用云函数，通过 engine 子域名也可以访问其他服务的 REST API。
+国内版因为要求用户绑自定义域名，所以也就自然而然不存在这一拆分了，
+因为对于绑定了自定义域名的应用而言，云函数 REST API 的 Base URL 和其他 REST API 服务的 Base URL 一样，都使用自定义域名。
+国际版因为不要求绑定自定义域名，所以根据 @jysperm 的建议，还是推荐用户按服务使用不同的共享域名。#}
+{% macro baseurl(service = "api") %}
+文档中{{ "云函数的" if service === "engine" else " API" }} Base URL 为绑定的 [API 自定义域名](custom-api-domain-guide.html)，
+可以在「控制台 > 设置 > 应用 Keys > 服务器地址」查看。
+
+如果暂时没有绑定域名，华北、华东节点可以使用临时的测试域名，具体域名见「控制台 > 设置 > 应用 Keys > 服务器地址」。
+该域名仅供测试和原型开发阶段使用，不保证可用性，请在正式发布前为应用绑定 API 自定义域名。
+
+LeanCloud 国际版不要求绑定自定义域名。除了使用自定义域名外，也可以使用如下共享域名：
+
+```
+appid前八位.{{service}}.lncldglobal.com
+```
+{% endmacro %}
+
+{% macro android_groovy(version=libVersion.unified) %}
+```groovy
+implementation 'cn.leancloud:storage-android:{{ version }}'
+implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+```
+{% endmacro %}
+
+{% macro android_key_init(appid="appid") %}
+```java
+import cn.leancloud.AVOSCloud;
+
+public class MyLeanCloudApp extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        // 提供 this、App ID、绑定的自定义 API 域名作为参数
+        AVOSCloud.initializeSecurely(this, "{{appid}}", "https://xxx.example.com");
+    }
+}
+```
+{% endmacro %}
+
+{% macro inc_float_warn() %}
+注意，虽然原子增减支持浮点数，但因为底层数据库的浮点数存储格式限制，会有舍入误差。
+因此，需要原子增减的字段建议使用整数以避免误差，例如 `3.14` 可以存储为 `314`，然后在客户端进行相应的转换。
+否则，以比较大小为条件查询对象的时候，需要特殊处理，
+`< a` 需改查 `< a + e`，`> a` 需改查 `> a - e`，`== a` 需改查 `> a - e` 且 `< a + e`，其中 `e` 为误差范围，据所需精度取值，比如 `0.0001`。
+{% endmacro %}
