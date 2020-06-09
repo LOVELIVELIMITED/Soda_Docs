@@ -25,31 +25,31 @@ angular.module("app").controller("AppCtrl", ['$scope', '$http', '$timeout', '$co
         }
         angular.element("body").scope().sdkversion = sdkversion;
 
-        $http.get('/1/clients/self').success(function (data) {
-            $scope.user = data;
-        });
+        // $http.get('/1/clients/self').success(function (data) {
+        //     $scope.user = data;
+        // });
 
-        $http.get("/1/clients/self/apps").success(
-            function (data) {
-                if (data.length > 0) {
-                    $rootScope.pageState.currentApp = data[0];
-                    $scope.$watch('pageState.currentApp', function () {
-                        if ($scope.pageState.currentApp && $scope.pageState.currentApp.app_id) {
-                            $scope.appid = $scope.pageState.currentApp.app_id;
-                            $scope.appkey = $scope.pageState.currentApp.app_key;
-                            $scope.masterkey = $scope.pageState.currentApp.master_key;
-                            $scope.sign_masterkey = $filter('signify')($scope.pageState.currentApp.master_key, 'master');
-                            $scope.sign_appkey = $filter('signify')($scope.pageState.currentApp.app_key);
-                            var prefix = $scope.appid.slice(0, 8).toLowerCase();
-                            $scope.domain = prefix + '.' + service + '.' + domain;
-                        }
-                    });
-                    $scope.apps = data;
-                }
+        // $http.get("/1/clients/self/apps").success(
+        //     function (data) {
+        //         if (data.length > 0) {
+        //             $rootScope.pageState.currentApp = data[0];
+        //             $scope.$watch('pageState.currentApp', function () {
+        //                 if ($scope.pageState.currentApp && $scope.pageState.currentApp.app_id) {
+        //                     $scope.appid = $scope.pageState.currentApp.app_id;
+        //                     $scope.appkey = $scope.pageState.currentApp.app_key;
+        //                     $scope.masterkey = $scope.pageState.currentApp.master_key;
+        //                     $scope.sign_masterkey = $filter('signify')($scope.pageState.currentApp.master_key, 'master');
+        //                     $scope.sign_appkey = $filter('signify')($scope.pageState.currentApp.app_key);
+        //                     var prefix = $scope.appid.slice(0, 8).toLowerCase();
+        //                     $scope.domain = prefix + '.' + service + '.' + domain;
+        //                 }
+        //             });
+        //             $scope.apps = data;
+        //         }
 
-            }).error(function (data) {
+        //     }).error(function (data) {
 
-            });
+        //     });
         $scope.signout = function () {
             $http.post('/1/signout').success(function (data) {
                 location.reload();
@@ -101,25 +101,25 @@ angular.module("app").controller("AppCtrl", ['$scope', '$http', '$timeout', '$co
         }
 
         function getComments() {
-            $http.get(commentHost + '/docs/' + docVersion + '/commentCount', {
-                withCredentials: true
-            }).success(function (result) {
-                var all = {};
-                angular.forEach(result, function (v, k) {
-                    // $('[version="'+v.snippetVersion+'"]').append(v.count);
-                    all[v.snippetVersion] = v.count;
-                });
-                $scope.allComment = all;
-            });
+            // $http.get(commentHost + '/docs/' + docVersion + '/commentCount', {
+            //     withCredentials: true
+            // }).success(function (result) {
+            //     var all = {};
+            //     angular.forEach(result, function (v, k) {
+            //         // $('[version="'+v.snippetVersion+'"]').append(v.count);
+            //         all[v.snippetVersion] = v.count;
+            //     });
+            //     $scope.allComment = all;
+            // });
         }
 
         $scope.getCommentUser = getUser;
         function getUser() {
-            $http.get(commentHost + '/users/current', {
-                withCredentials: true
-            }).success(function (result) {
-                $scope.currentCommentUser = result;
-            });
+            // $http.get(commentHost + '/users/current', {
+            //     withCredentials: true
+            // }).success(function (result) {
+            //     $scope.currentCommentUser = result;
+            // });
         }
 
         function getCommentsBySnipeet(snippet) {

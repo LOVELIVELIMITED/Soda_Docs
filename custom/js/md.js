@@ -117,7 +117,7 @@ var initGitHubLinks = function () {
 // Init GitHub contributors
 function getGitHubContributors() {
   var currentPath = window.location.pathname.match(/.*\/(.+).html/i)[1];
-  var url = 'https://api.github.com/repos/LOVELIVELIMITED/Soda_Docs/commits?path=md/' + currentPath + '.md&per_page=10000000';
+  var url = 'https://api.github.com/repos/LOVELIVELIMITED/Soda_Docs/commits?path=views/' + currentPath + '.md&per_page=10000000';
   var contributors = [];
   var appendTarget = $('#content h1');
   var githubAvatarUrl = 'https://avatars.githubusercontent.com/u';
