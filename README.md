@@ -29,13 +29,25 @@
 
 ```json
 {
-  "errno": 1000,
-  "errmsg": "缺少必要字段：app_key"
+  "errno": 4001,
+  "errmsg": "app_key不存在"
 }
 ```
 
+### 请求签名
 
-## 起点地址终点地址 JSON 
+将全部的请求内容使用字母顺序 a-z 进行排序，排序后使用 md5 HEX 进行加密后放置于头部 sign 字段。  
+
+如密钥错误会返回
+
+```json
+{
+  "errno": 4003,
+  "errmsg": "Wrong Sign"
+}
+```
+
+### 起点地址终点地址 JSON 
 | 字段  | 格式                               | 备注 |
 | ---- | ---------------------------------- | |
 |formatted_addresse|String|街道名|
@@ -231,10 +243,6 @@
 ```
 
 #### 返回示例
-| 字段  | 格式                               | 备注 |
-| ---- | ---------------------------------- | |
-|TODO|String|TODO|
-
 ```json
 {
   "errno": 0,
@@ -305,17 +313,16 @@
 | 字段  | 格式                               | 备注 |
 | ---- | ---------------------------------- | |
 |app_key|String|AppKey 企业微信联系 `@liujiaqi` 获取|
+|order_no|String|订单编号|
 
 ```json
 {
   "app_key": "AppKey",
+  "order_no": "705ecf800d864bf180c9052704c5f60a"
 }
 ```
 
 #### 返回示例
-| 字段  | 格式                               | 备注 |
-| ---- | ---------------------------------- | |
-|TODO|String|TODO|
 
 ```json
 {
@@ -353,7 +360,7 @@
       "distance": 1540,
       "ws_id": 0,
       "refund_no": null,
-      "argue_desc": "糖吃洒了",
+      "argue_desc": "",
       "order_type": 1,
       "opentp_key": "APPKEY"
     },
@@ -388,59 +395,24 @@
 | 字段  | 格式                               | 备注 |
 | ---- | ---------------------------------- | |
 |app_key|String|AppKey 企业微信联系 `@liujiaqi` 获取|
+|argue_desc|String|争议内容，请描述|
+|order_no|String|订单编号|
 
 ```json
 {
-  "app_key": "AppKey",
+  "argue_desc": "糖吃洒了",
+  "order_no": "705ecf800d864bf180c9052704c5f60a1",
+  "app_key": "APPKEY"
 }
 ```
 
 #### 返回示例
-| 字段  | 格式                               | 备注 |
-| ---- | ---------------------------------- | |
-|TODO|String|TODO|
 
 ```json
 {
   "errno": 0,
-  "errmsg": "success",
-  "data": [
-    {
-      "id": 3366,
-      "order_no": "705ecf800d864bf180c9052704c5f60a",
-      "pay_amount": 3.49,
-      "pay_type": 1,
-      "service_type": "OPENID",
-      "interal_value": 0,
-      "interal_amount": 0,
-      "night_price": 0,
-      "start_distance_amount": 3.49,
-      "exceed_distance_amount": 0,
-      "exceed_distance": 0,
-      "weight_id": 0,
-      "weight_price": 0,
-      "status": 3,
-      "refund_amount": 0,
-      "refund_status": 0,
-      "start_address": "",
-      "start_hash": null,
-      "end_address": "",
-      "goods_des": "测试物品",
-      "send_time": "2020-06-22 16:49:39",
-      "create_time": "2020-06-22 16:49:40",
-      "expt_desc": null,
-      "wx_id": 0,
-      "form_ids": "",
-      "openid": "0",
-      "tip": 0,
-      "distance": 1540,
-      "ws_id": 0,
-      "refund_no": null,
-      "argue_desc": "糖吃洒了",
-      "order_type": 1,
-      "opentp_key": "APPKEY"
-    },
-  ]
+  "errmsg": "",
+  "data": "收到，订单进入争议流程"
 }
 ```
 
