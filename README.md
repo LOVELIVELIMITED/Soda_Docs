@@ -17,9 +17,8 @@
 | 区域   | Base URL                                |
 | ---- | ---------------------------------------- |
 | 🇳🇿新西兰  | nz-merc.lovelive.team |
-| 🇬🇧英国  | uk-merc.lovelive.team |
-| 🇦🇺澳大利亚  | au-merc.lovelive.team |
-| 🇺🇸美国  | us-merc.lovelive.team |
+
+<!---| 🇬🇧英国  | uk-merc.lovelive.team || 🇦🇺澳大利亚  | au-merc.lovelive.team || 🇺🇸美国  | us-merc.lovelive.team |--->
 
 ### 标准响应格式
 
@@ -201,7 +200,8 @@ Soda 将以 Json 格式向提前预留的接口发送请求。请求示例如下
 |endAddress|String|终点地址是一个 object 请求时将它转成 string 类型|
 |service_type|String|AppKey 企业微信联系 `@liujiaqi` 获取|
 |weight|Number|单位为 `g` 如 `1` 公斤则填写 `1000`|
-|textarea|String|物品描述|
+|textarea|String|平台订单号|
+|goodslist|String|商品描述是一个 object 请求时将它转成 string 类型|
 
 ```json
 {
@@ -209,8 +209,32 @@ Soda 将以 Json 格式向提前预留的接口发送请求。请求示例如下
   "startAddress": "{ "formatted_addresse":"4 Yjsp St", "city":"Mount Eden\nAuckland 1024", "latitude":-36.89357, "longitude":174.759766, "phone":"0220826111", "name":"兔先生" }",
   "endAddress": "{ "formatted_addresse":"4 Yjsp St", "city":"Mount Eden\nAuckland 1024", "latitude":-36.89357, "longitude":174.759766, "phone":"0220826111", "name":"兔先生" }",
   "service_type": "OPENID",
-  "textarea": "红茶叶",
-  "weight": 10000
+  "textarea": "平台订单号",
+  "weight": 10000,
+  "goodslist":{
+    "totalprice":1145.14,
+    "noti":"多喝热水么么哒",
+    "data":[
+        "{
+          "id":1,
+          "name":"吃米酸奶",
+          "price":1.14,
+          "qty":19
+        }",
+        "{
+          "id":2,
+          "name":"矢泽妮可",
+          "price":19.19,
+          "qty":810
+        }",
+        "{
+          "id":3,
+          "name":"渡边曜",
+          "price":8.10,
+          "qty":19
+        }"
+    ]
+  }
 }
 ```
 
