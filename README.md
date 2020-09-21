@@ -473,7 +473,9 @@ Soda 将以 Json 格式向提前预留的接口发送请求。请求示例如下
       "refund_no": null,
       "argue_desc": "",
       "order_type": 1,
-      "opentp_key": "APPKEY"
+      "opentp_key": "APPKEY",
+      "lat": -36.801526,
+      "lnt": 174.740425,
     },
   ]
 }
