@@ -202,6 +202,7 @@ Soda 将以 Json 格式向提前预留的接口发送请求。请求示例如下
 |weight|Number|单位为 `g` 如 `1` 公斤则填写 `1000`|
 |textarea|String|平台订单号|
 |goodslist|String|商品描述是一个 object 请求时将它转成 string 类型|
+｜est_time｜String｜预计时间｜
 
 ```json
 {
