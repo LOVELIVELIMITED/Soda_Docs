@@ -203,7 +203,7 @@ Soda 将以 Json 格式向提前预留的接口发送请求。请求示例如下
 |textarea|String|平台订单号|
 |goodslist|String|商品描述是一个 object 请求时将它转成 string 类型|
 |est_time|String|预计出餐时间|
-|sent_time|String “2020-04-03 15:56:34”|未来运送时间 |
+|sent_time|2020-04-03 15:56:34|未来运送时间 |
 
 ```json
 {
